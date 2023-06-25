@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../static/styles.css" rel="stylesheet" type="text/css">
+
+  <title>JP beauty Shop</title>
+
+</head>
+<body>
+    <header>
+        <div class="shop-header">
+        <div class="logo">
+          <img src="{{ url_for('static', filename='jplogo.jpg') }}" alt="Shop Logo">
+        </div>
+        <h1>JP beauty</h1>    
+        </div>
+        
+        <div class="cart-button">
+          <a class="cart-icon" href="{{ url_for('cart', user_id=user_id)}}"><img src="https://img.icons8.com/?size=512&id=9671&format=png" alt="Cart Icon"></a>
+          <a class="cart-icon" href="{{ url_for('cart', user_id=user_id)}}"><img src="https://img.icons8.com/?size=512&id=23264&format=png" alt="Member Icon"></a>
+        </div>
+      </header>
+
+
+
+  <main>
+    <section class="order-page">
+      <h2>Order Confirmation</h2>
+      <div class="order-details">
+        <h3>Order Summary</h3>
+        <table class="order-items">
+          <tr>
+            <th>Product Name</th>
+            <th>Price</th>
+            <th>Amount</th>
+            <th>Total</th>
+          </tr>
+          <!-- Insert dynamic order items here -->
+          <tr>
+            <td>Product 1</td>
+            <td>$19.99</td>
+            <td>2</td>
+            <td>$39.98</td>
+          </tr>
+          <tr>
+            <td>Product 2</td>
+            <td>$24.99</td>
+            <td>1</td>
+            <td>$24.99</td>
+          </tr>
+        </table>
+        <div class="order-total">
+          <span class="total-label">Total:</span>
+          <span class="total-price">$64.97</span>
+        </div>
+      </div>
+      <div class="container">
+        <div class="customer-info">
+          <h2>Customer Information</h2>
+          <p><strong>Name:</strong> John Doe</p>
+          <p><strong>Address:</strong> 123 Main St, Anytown, USA</p>
+          <div class="payment-slip">
+            <img src="path/to/payment-slip.jpg" alt="Payment Slip">
+          </div>
+
+
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="customer-info">
+          <div class="order-process">
+            <h3>Order Process</h3>
+            <img src="path/to/slip-verify.jpg" alt="Slip Verification">
+            <p>Slip Verification</p>
+            <img src="path/to/prepare-order.jpg" alt="Preparing Order">
+            <p>Preparing Order</p>
+            <img src="path/to/sending.jpg" alt="Order Sending">
+            <p>Order Sending</p>
+            <img src="path/to/customer-receive.jpg" alt="Customer Receive">
+            <p>Customer Receive</p>
+          </div>
+        </div>
+      </div>
+
+
+
+      </div>
+
+    </section>
+
+
+
+  </main>
+
+  <footer>
+    <p>&copy; 2023 Sweet and Green. All rights reserved.</p>
+  </footer>
+</body>
+
+</html>

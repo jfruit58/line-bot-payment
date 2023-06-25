@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../static/styles.css" rel="stylesheet" type="text/css">
+
+  <title>JP beauty Shop</title>
+
+</head>
+
+<body>
+  <header>
+    <div class="shop-header">
+      <div class="logo">
+        <a href="{{ url_for('shop', user_id=user_id)}}"><img src="{{ url_for('static', filename='jplogo.jpg') }}" alt="Shop Logo"></a>
+      </div>
+      <a class="shop-name" href="{{ url_for('shop', user_id=user_id)}}"><h1>JP beauty</h1></a>
+    </div>
+
+    <div class="cart-button">
+      <a class="cart-icon" href="{{ url_for('cart', user_id=user_id)}}"><img
+          src="https://img.icons8.com/?size=512&id=9671&format=png" alt="Cart Icon"></a>
+      <a class="cart-icon" href="{{ url_for('cart', user_id=user_id)}}"><img
+          src="https://img.icons8.com/?size=512&id=23264&format=png" alt="Member Icon"></a>
+    </div>
+  </header>
+
+
+
+  <main>
+    <section class="cart">
+      <h2>Cart</h2>
+      <table class="cart-items">
+        <tr>
+          <th>Product Name</th>
+          <th>Price</th>
+          <th>Amount</th>
+          <th>Total</th>
+        </tr>
+        {% for item in data %}
+        <tr class="cart-item">
+          <td class="item-name">{{ item[4] }}</td>
+          <td class="item-price">{{ item[5] }} THB</td>
+          <td class="item-amount">{{ item[3] }}</td>
+          <td class="item-total">{{ item[5] * item[3] }} THB</td>
+        </tr>
+        {% endfor %}
+
+        <!-- Add more cart items as needed -->
+      </table>
+      <div class="total">
+        <span class="total-label">Total:</span>
+        
+        <span class="total-price">
+          {% set ns = namespace(total = 0) %}
+          {% for item in data %}
+          {% set price = item[5] %}
+          {% set quantity = item[3] %}
+          {% if price is number and quantity is number %}
+          {% set item_total = price * quantity %}
+          {% set ns.total =  ns.total  + item_total %}
+          {% endif %}
+          {% endfor %}
+          Total: {{ ns.total }} THB
+
+        </span>
+      </div>
+    </section>
+    <div class="address-form">
+      <h3>Shipping Address</h3>
+      <form>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <label for="address">Address:</label>
+        <textarea id="address" name="address" required></textarea>
+        <div class="transfer-slip">
+          <h3>Upload Transfer Slip</h3>
+          <input type="file" accept="image/*" id="transfer-slip" name="transfer-slip" required>
+        </div>
+        <button type="submit">Confirm Order</button>
+      </form>
+    </div>
+
+
+  </main>
+
+  <footer>
+    <p>&copy; 2023 Sweet and Green. All rights reserved.</p>
+  </footer>
+</body>
+
+</html>
