@@ -45,7 +45,13 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 @app.route('/')
 def hello_world():
+
     return 'Hello, World!'
+
+@app.route('/profile')
+def hello_world():
+    
+    return 'Profile'
 
 
 @app.route('/callback')
