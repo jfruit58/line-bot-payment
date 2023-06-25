@@ -1,1 +1,1 @@
-# line-bot-jpbeauty
+# line-bot-payment
