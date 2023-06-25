@@ -49,9 +49,9 @@ def hello_world():
     return 'Hello, World!'
 
 @app.route('/profile')
-def hello_world():
+def profile():
     
-    return 'Profile'
+    return render_template('profile.html')
 
 
 @app.route('/callback')
