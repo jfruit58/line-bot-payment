@@ -19,7 +19,8 @@ from argparse import ArgumentParser
 import psycopg2
 from datetime import datetime
 
-from flask import Flask, request, abort ,render_template ,redirect
+from flask import Flask, request, abort ,render_template ,redirect, request
+import requests
 from linebot import (
     LineBotApi, WebhookParser,WebhookHandler
 )
@@ -29,7 +30,7 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage,FollowEvent, ImageSendMessage, TemplateSendMessage, ButtonsTemplate, PostbackTemplateAction,
     CarouselTemplate, CarouselColumn, FlexSendMessage, BubbleContainer, BoxComponent, ImageComponent, TextComponent, ButtonComponent, SeparatorComponent,
-    PostbackEvent, QuickReply, QuickReplyButton, MessageAction,URIAction , 
+    PostbackEvent, QuickReply, QuickReplyButton, MessageAction,URIAction 
 
 )
 
@@ -61,6 +62,32 @@ handler = WebhookHandler(channel_secret)
 def hello_world():
     return 'Hello, World!'
 
+@app.route("/profile/<user_id>", methods=["GET"])
+def register_form(user_id):
+   
+    profile = line_bot_api.get_profile(user_id)
+    pic = profile.picture_url
+    print(pic)
+    # create a connection to the database
+    conn = psycopg2.connect(url)
+    
+    # create a cursor
+    cur = conn.cursor()
+
+    # Check user is not already taken
+    cur.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
+
+    rows = cur.fetchall()
+
+    print(rows)
+  
+    if len(rows) != 0 :
+        
+        return  render_template("profile.html",data=rows[0] ,pic = pic )
+
+
+    return render_template("register.html", user_id=user_id )
+
 @app.route('/shop/<user_id>')
 def shop(user_id):
 
@@ -76,59 +103,45 @@ def shop(user_id):
     
     return render_template("shop.html",data=shop_products,user_id=user_id,)
 
-@app.route('/cart/<user_id>')
-def cart(user_id):
-    #get product
-    conn = psycopg2.connect(url)
-    cur = conn.cursor()
-    #cur.execute("SELECT * FROM shop_cart_items WHERE user_id = %s;", (user_id,))
-    cur.execute("SELECT c.*, p.name, p.price FROM shop_cart_items c JOIN shop_products p ON c.product_id = p.id WHERE c.user_id = %s", (user_id,))
-    cart = cur.fetchall()
-
-    print(cart)
-
-    # close the cursor and connection
-    cur.close()
-    conn.close()
-    return render_template("cart.html",data=cart,user_id=user_id,)
 
 @app.route('/order/<user_id>')
 def order(user_id):
     return render_template("order.html")
 
-@app.route("/additem/<user_id>", methods=['POST'])
-def additem(user_id):
-
-    user_id = request.form.get('user_id')
-    product_id = request.form.get('product_id')
-
-    # add new item to cart in database
-    conn = psycopg2.connect(url)
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM shop_cart_items WHERE user_id = %s AND product_id = %s", (user_id, product_id))
-    existing_item = cur.fetchone()
-
-    if existing_item:
-        # If the item already exists, update the quantity
-        cur.execute("UPDATE shop_cart_items SET quantity = quantity + 1 WHERE user_id = %s AND product_id = %s", (user_id, product_id))
-    else:
-        # If the item doesn't exist, insert a new row with quantity = 1
-        cur.execute("INSERT INTO shop_cart_items (user_id, product_id, quantity) VALUES (%s, %s, 1)", (user_id, product_id))
-
-    conn.commit()
-
-    cur.execute("SELECT * FROM shop_products")
-    shop_products = cur.fetchall()
-
-    # Close the cursor and connection
-    cur.close()
-    conn.close()
-
-    return render_template("shop.html", data=shop_products, user_id=user_id)
-
-
-@app.route("/callback", methods=['POST'])
+@app.route('/callback')
 def callback():
+    code = request.args.get('code')
+
+    # Exchange the authorization code for an access token
+    payload = {
+        'grant_type': 'authorization_code',
+        'code': code,
+        'client_id': '1661524605',
+        'client_secret': 'c4ceab5e11eab903babfdaf38edb58f4',
+        'redirect_uri': 'https://liff.line.me/1661524605-5Z902Yep'
+    }
+
+    response = requests.post('https://api.line.me/oauth2/v2.1/token', data=payload)
+    if response.status_code == 200:
+        access_token = response.json()['access_token']
+
+        # Use the access token to retrieve user information
+        headers = {
+            'Authorization': f'Bearer {access_token}'
+        }
+        user_response = requests.get('https://api.line.me/v2/profile', headers=headers)
+        if user_response.status_code == 200:
+            user_info = user_response.json()
+            # You can now use the user_info to authenticate the user in your web application
+            # For example, you can store the user's LINE ID or display name in your database
+
+            return 'Login successful'
+    
+    return 'Login failed'
+
+
+@app.route("/callback2", methods=['POST'])
+def callback2():
     # get X-Line-Signature header value
     signature = request.headers['X-Line-Signature']
 
@@ -259,8 +272,6 @@ def case_3(event):
         event.reply_token,
         TextMessage(text=webpage_url)
     )
-
-
 
 
 def default_case(event):

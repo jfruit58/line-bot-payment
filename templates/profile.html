@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Include the LINE SDK -->
+  <script src="https://static.line-scdn.net/liff/edge/versions/2.13.0/sdk.js"></script>
   <link href="../static/styles.css" rel="stylesheet" type="text/css">
   <title>Member Profile</title>
 </head>
@@ -18,6 +20,20 @@
     <button>Edit ✏️</button>
   </div>
 </body>
+
+<!-- Initialize the LINE SDK -->
+<script>
+  window.onload = function () {
+    liff.init({ liffId: '1661524605-5Z902Yep' }, () => {
+
+      if (!liff.isLoggedIn()) {
+          liff.login({ redirectUri: 'https://line-bot-payment.onrender.com/callback2' });
+        }
+      }, (err) => {
+      console.error(err);
+    });
+  };
+</script>
 
 </html>
 
