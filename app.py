@@ -70,7 +70,7 @@ def profile():
     return render_template('profile.html')
 
 @app.route("/chatbot", methods=['POST'])
-def callback():
+def chatbot():
     # get X-Line-Signature header value
     signature = request.headers['X-Line-Signature']
 
