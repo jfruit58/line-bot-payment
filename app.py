@@ -41,6 +41,22 @@ app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 
+# get channel_secret and channel_access_token from your environment variable
+channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
+channel_access_token = os.getenv('LINE_CHANNEL_ACCESS_TOKEN', None)
+if channel_secret is None:
+    print('Specify LINE_CHANNEL_SECRET as environment variable.')
+    sys.exit(1)
+if channel_access_token is None:
+    print('Specify LINE_CHANNEL_ACCESS_TOKEN as environment variable.')
+    sys.exit(1)
+
+
+line_bot_api = LineBotApi(channel_access_token)
+parser = WebhookParser(channel_secret)
+handler = WebhookHandler(channel_secret)
+
+
 
 
 @app.route('/')
@@ -52,6 +68,37 @@ def hello_world():
 def profile():
     
     return render_template('profile.html')
+
+@app.route("/chatbot", methods=['POST'])
+def callback():
+    # get X-Line-Signature header value
+    signature = request.headers['X-Line-Signature']
+
+    # get request body as text
+    body = request.get_data(as_text=True)
+    app.logger.info("Request body: " + body)
+
+    # handle webhook body
+    try:
+        handler.handle(body, signature)
+    except InvalidSignatureError:
+        print("Invalid signature. Please check your channel access token/channel secret.")
+        abort(400)
+
+    return 'OK'
+
+@handler.add(FollowEvent)
+def handle_follow(event):
+    user_id = event.source.user_id
+    profile = line_bot_api.get_profile(user_id)
+
+    greeting_message = "สวัสดีค่ะ!😊 " + profile.display_name + " ขอบคุณที่เป็นเพื่อนกับเรา. \n\n ยินดีตอนรับสู่ JPBeauty's Line Official Channel, 🥳\n\n ✨JPBeauty ยินดีที่ได้เป็นตัวเลือกในการช่วยให้คุณสามารถ🛒ช๊อปปี้สินค้าหลายรายการจาก duty free ทั่วโลกอย่างสะดวกสบายโดยไม่ต้องเดินทาง✈️ \n\n🌈 ไม่ว่าจะเป็นสินค้าชนิดใด ทีมของเรายินดีสัญหาเพื่อให้การบริการที่ดีที่สุดแก่ท่าน ✨ \n\n 🔥ท่านสามาถเลือกชมรายการสินค้าได้จากเมนูด้านล่าง หากท่านมีข้อสงสัย ทีมงานจะตอบกลับท่านโดยเร็วที่สุด ขอให้มีความสุขในการช็อปปิ้งค่ะ❤️"    
+
+    # Send both image and template messages
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=greeting_message)
+    )
 
 
 @app.route('/callback')
