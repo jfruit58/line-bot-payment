@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Include the LINE SDK -->
+  <script src="https://static.line-scdn.net/liff/edge/versions/2.13.0/sdk.js"></script>
+  <link href="../static/styles.css" rel="stylesheet" type="text/css">
+  <title>Member Profile</title>
+</head>
+
+<body>
+  <img id="pictureUrl" width="25%">
+  <p id="userId"></p>
+  <p id="displayName"></p>
+  <p id="statusMessage"></p>
+  <p id="getDecodedIDToken"></p>
+
+</body>
+
+<!-- Initialize the LINE SDK -->
+
+<script>
+  function runApp() {
+      liff.getProfile().then(profile => {
+        document.getElementById("pictureUrl").src = profile.pictureUrl;
+        document.getElementById("userId").innerHTML = '<b>UserId:</b> ' + profile.userId;
+        document.getElementById("displayName").innerHTML = '<b>DisplayName:</b> ' + profile.displayName;
+        document.getElementById("statusMessage").innerHTML = '<b>StatusMessage:</b> ' + profile.statusMessage;
+        document.getElementById("getDecodedIDToken").innerHTML = '<b>Email:</b> ' + liff.getDecodedIDToken().email;
+
+        // Redirect to another page with parameters
+        var param1 = profile.userId;
+        var param2 = profile.pictureUrl;
+     
+        var redirectTo = 'https://line-bot-payment.onrender.com/profile?user_id=' + encodeURIComponent(param1) + '&pic=' + encodeURIComponent(param2);
+        window.location.href = redirectTo;
+
+
+      }).catch(err => console.error(err));
+
+      
+      
+    }
+  liff.init({ liffId: "1661524605-5Z902Yep" }, () => {
+    if (liff.isLoggedIn()) {
+      runApp()
+    } else {
+      liff.login();
+    }
+  }, err => console.error(err.code, error.message));
+</script>
+
+
+
+</html>
+
+
+
+
+
+
