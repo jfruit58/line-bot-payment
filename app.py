@@ -101,6 +101,7 @@ def regis():
     if request.method == "POST":
         
         user_id = request.args.get('user_id')
+        pic = request.args.get('pic')
 
         # create a connection to the database
         conn = psycopg2.connect(url)
@@ -149,7 +150,7 @@ def regis():
     
         if len(rows) != 0 :
 
-            return  render_template("profile.html",data=rows[0]  )
+            return  render_template("profile.html",data=rows[0] , pic = pic )
 
 
         return render_template("register.html", user_id=user_id )
