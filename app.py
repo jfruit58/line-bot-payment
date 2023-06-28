@@ -138,6 +138,8 @@ def regis():
         # Check user is not already taken
         cur.execute("UPDATE payment_users SET user_id = %s WHERE idnumber = %s", (user_id,idnumber,))
 
+        conn.commit()
+
         return render_template("register.html", user_id=user_id )
    
     # User reached route via GET (as by clicking a link or via redirect)
