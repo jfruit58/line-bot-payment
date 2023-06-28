@@ -96,7 +96,7 @@ def profile():
     return render_template("register.html", user_id=user_id )
 
 @app.route("/regis", methods=["POST"])
-def profile():
+def regis():
    
    if request.method == "POST":
         
