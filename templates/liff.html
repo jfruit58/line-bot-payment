@@ -7,16 +7,11 @@
   <!-- Include the LINE SDK -->
   <script src="https://static.line-scdn.net/liff/edge/versions/2.13.0/sdk.js"></script>
   <link href="../static/styles.css" rel="stylesheet" type="text/css">
-  <title>Member Profile</title>
+  <title>Liff</title>
 </head>
 
 <body>
-  <img id="pictureUrl" width="25%">
-  <p id="userId"></p>
-  <p id="displayName"></p>
-  <p id="statusMessage"></p>
-  <p id="getDecodedIDToken"></p>
-
+  Redirect
 </body>
 
 <!-- Initialize the LINE SDK -->
@@ -24,11 +19,11 @@
 <script>
   function runApp() {
       liff.getProfile().then(profile => {
-        document.getElementById("pictureUrl").src = profile.pictureUrl;
-        document.getElementById("userId").innerHTML = '<b>UserId:</b> ' + profile.userId;
-        document.getElementById("displayName").innerHTML = '<b>DisplayName:</b> ' + profile.displayName;
-        document.getElementById("statusMessage").innerHTML = '<b>StatusMessage:</b> ' + profile.statusMessage;
-        document.getElementById("getDecodedIDToken").innerHTML = '<b>Email:</b> ' + liff.getDecodedIDToken().email;
+        //document.getElementById("pictureUrl").src = profile.pictureUrl;
+        //document.getElementById("userId").innerHTML = '<b>UserId:</b> ' + profile.userId;
+        //document.getElementById("displayName").innerHTML = '<b>DisplayName:</b> ' + profile.displayName;
+        //document.getElementById("statusMessage").innerHTML = '<b>StatusMessage:</b> ' + profile.statusMessage;
+        //document.getElementById("getDecodedIDToken").innerHTML = '<b>Email:</b> ' + liff.getDecodedIDToken().email;
 
         // Redirect to another page with parameters
         var param1 = profile.userId;

@@ -70,7 +70,7 @@ def liff():
     return render_template('liff.html')
 
 @app.route("/profile", methods=["GET"])
-def register_form():
+def profile():
    
     user_id = request.args.get('user_id')
     pic = request.args.get('pic')
@@ -95,6 +95,58 @@ def register_form():
 
     return render_template("register.html", user_id=user_id )
 
+@app.route("/regis", methods=["POST"])
+def profile():
+   
+   if request.method == "POST":
+        
+        user_id = request.args.get('user_id')
+
+        # create a connection to the database
+        conn = psycopg2.connect(url)
+
+        # create a cursor
+        cur = conn.cursor()
+
+        # Check user is not already taken
+        cur.execute("SELECT * FROM payment_users WHERE user_id = %s", (user_id,))
+
+        rows = cur.fetchall()
+
+        print(rows)
+    
+        if len(rows) != 0 :
+
+            return  render_template("profile.html",data=rows[0]  )
+        
+        name = request.form.get('name')
+        surname = request.form.get('surname')
+        phone = request.form.get('phone')
+        idnumber = request.form.get('idnumber')
+        
+        # Check user is not already taken
+        cur.execute("SELECT * FROM payment_users WHERE idnumber = %s", (idnumber,))
+
+        rows = cur.fetchall()
+
+        if len(rows) == 0 :
+
+            message = 'ข้อมูลของคุณไม่อยู่ใน database กรุณาติดต่อ admin'
+
+            return  render_template("message.html",message=message  )
+        
+        # Check user is not already taken
+        cur.execute("UPDATE payment_users SET userid = %s WHERE idnumber = %s", (user_id,idnumber,))
+
+        return render_template("register.html", user_id=user_id )
+   
+    # User reached route via GET (as by clicking a link or via redirect)
+   else:
+    
+        return render_template('liff.html')
+   
+
+
 @app.route("/chatbot", methods=['POST'])
 def chatbot():
     # get X-Line-Signature header value
@@ -118,7 +170,7 @@ def handle_follow(event):
     user_id = event.source.user_id
     profile = line_bot_api.get_profile(user_id)
 
-    greeting_message = "สวัสดีครับ!😊 " + profile.display_name + " ขอบคุณที่เป็นเพื่อนกับเรา. \n\n ยินดีตอนรับสู่ Line Official Channel, 🥳\n\n ✨Service ยินดีที่ได้เป็นตัวเลือกในการช่วยให้คุณสามารถเช็คยอดค้างชำระได้ด้วยตนเองและสะดวกสบายรวดเร็วทุกทีทุกเวลา \n\n🌈  ทีมของเรายินดีพัฒนาเพื่อให้การบริการที่ดีที่สุดแก่ท่าน ✨ \n\n 🔥ท่านกรุณาสมัครสมาชิกเพื่อยืนยันตัวตนจากเมนูด้านล่าง หากท่านมีข้อสงสัย ทีมงานจะตอบกลับท่านโดยเร็วที่สุด ขอให้มีความสุขกับบริการใหม่ของเราครับ❤️"    
+    greeting_message = "สวัสดีครับ!😊 คุณ" + profile.display_name + " ขอบคุณที่เป็นเพื่อนกับเรา. \n\n ยินดีตอนรับสู่ Line Official Channel, 🥳\n\n ✨เรายินดีที่ได้เป็นตัวเลือกในการช่วยให้คุณสามารถเช็คยอดค้างชำระด้วยตนเองได้อย่างสะดวกและรวดเร็วทุกทีทุกเวลา \n\n🌈  ทีมของเรายินดีพัฒนาการทำงานเพื่อให้การบริการที่ดีที่สุดแก่ท่าน ✨ \n\n 🔥ท่านที่เข้ามาครั้งแรกกรุณาสมัครสมาชิกเพื่อยืนยันตัวตนจากเมนูด้านล่าง หากท่านมีข้อสงสัย ทีมงานจะตอบกลับท่านโดยเร็วที่สุด ขอให้มีความสุขกับบริการใหม่ของเราครับ❤️"    
 
     # Send both image and template messages
     line_bot_api.reply_message(
@@ -126,6 +178,40 @@ def handle_follow(event):
         TextSendMessage(text=greeting_message)
     )
 
+@handler.add(MessageEvent, message=TextMessage)
+def handle_message(event):
+
+    user_id = event.source.user_id
+
+    # create a connection to the database
+    conn = psycopg2.connect(url)
+    
+    # create a cursor
+    cur = conn.cursor()
+
+    # Check user is not already taken
+    cur.execute("SELECT * FROM payment_users WHERE user_id = %s", (user_id,))
+
+    rows = cur.fetchall()
+
+    if len(rows) == 0 :
+        
+        message = "กรุณาลงทะเบียนสมาชิกก่อนใช้บริการครับ"
+
+    elif event.message.text =='เช็คยอด':
+
+        message = "5000"
+
+    else :
+
+        message = "ขอบคุณที่ส่งข้อความถึงเรา\nนี่เป็นระบบตอบกลับอัตโนมัติ\nเราจะให้เจ้าหน้าที่ตอบกลับท่านโดยด่วน\nหากเหตุฉุกเฉินกรุณาติดต่อ\n 📞Callcenter 02-111222333"
+
+    
+    # Send both image and template messages
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=message)
+    )
 
 @app.route('/callback')
 def callback():
