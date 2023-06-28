@@ -98,7 +98,7 @@ def profile():
 @app.route("/regis", methods=["POST"])
 def regis():
    
-   if request.method == "POST":
+    if request.method == "POST":
         
         user_id = request.args.get('user_id')
 
@@ -140,10 +140,22 @@ def regis():
 
         conn.commit()
 
+        # Check user is not already taken
+        cur.execute("SELECT * FROM payment_users WHERE user_id = %s", (user_id,))
+
+        rows = cur.fetchall()
+
+        print(rows)
+    
+        if len(rows) != 0 :
+
+            return  render_template("profile.html",data=rows[0]  )
+
+
         return render_template("register.html", user_id=user_id )
    
     # User reached route via GET (as by clicking a link or via redirect)
-   else:
+    else:
     
         return render_template('liff.html')
    
@@ -202,7 +214,201 @@ def handle_message(event):
 
     elif event.message.text =='เช็คยอด':
 
-        message = "5000"
+        flex_message = FlexSendMessage(
+                alt_text='You received a message',
+                contents={
+                    
+                              "type": "bubble",
+                              "body": {
+                                "type": "box",
+                                "layout": "vertical",
+                                "contents": [
+                                  {
+                                    "type": "text",
+                                    "text": "ใบแจ้งหนี้",
+                                    "weight": "bold",
+                                    "color": "#1DB446",
+                                    "size": "sm"
+                                  },
+                                  {
+                                    "type": "text",
+                                    "text": "Studio Service",
+                                    "weight": "bold",
+                                    "size": "xxl",
+                                    "margin": "md"
+                                  },
+                                  {
+                                    "type": "text",
+                                    "text": "89 Sun Tower, Lak si , Bangkok",
+                                    "size": "xs",
+                                    "color": "#aaaaaa",
+                                    "wrap": True
+                                  },
+                                  {
+                                    "type": "separator",
+                                    "margin": "xxl"
+                                  },
+                                  {
+                                    "type": "box",
+                                    "layout": "vertical",
+                                    "margin": "xxl",
+                                    "spacing": "sm",
+                                    "contents": [
+                                      {
+                                        "type": "box",
+                                        "layout": "horizontal",
+                                        "contents": [
+                                          {
+                                            "type": "text",
+                                            "text": "Main service",
+                                            "size": "sm",
+                                            "color": "#555555",
+                                            "flex": 0
+                                          },
+                                          {
+                                            "type": "text",
+                                            "text": "4000 THB",
+                                            "size": "sm",
+                                            "color": "#111111",
+                                            "align": "end"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "type": "box",
+                                        "layout": "horizontal",
+                                        "contents": [
+                                          {
+                                            "type": "text",
+                                            "text": "Mainternance",
+                                            "size": "sm",
+                                            "color": "#555555",
+                                            "flex": 0
+                                          },
+                                          {
+                                            "type": "text",
+                                            "text": "1000 THB",
+                                            "size": "sm",
+                                            "color": "#111111",
+                                            "align": "end"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "type": "separator",
+                                        "margin": "xxl"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "box",
+                                    "layout": "vertical",
+                                    "margin": "xxl",
+                                    "spacing": "sm",
+                                    "contents": [
+                                      {
+                                        "type": "box",
+                                        "layout": "horizontal",
+                                        "contents": [
+                                          {
+                                            "type": "text",
+                                            "text": "Total",
+                                            "size": "sm",
+                                            "color": "#555555",
+                                            "flex": 0,
+                                            "weight": "bold"
+                                          },
+                                          {
+                                            "type": "text",
+                                            "text": "5000 THB",
+                                            "size": "sm",
+                                            "color": "#111111",
+                                            "align": "end"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "separator",
+                                    "margin": "xxl"
+                                  },
+                                  {
+                                    "type": "box",
+                                    "layout": "horizontal",
+                                    "margin": "md",
+                                    "contents": [
+                                      {
+                                        "type": "text",
+                                        "text": "SLIP ID",
+                                        "size": "xs",
+                                        "color": "#aaaaaa",
+                                        "flex": 0
+                                      },
+                                      {
+                                        "type": "text",
+                                        "text": "#743289384279",
+                                        "color": "#aaaaaa",
+                                        "size": "xs",
+                                        "align": "end"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "box",
+                                    "layout": "vertical",
+                                    "contents": [
+                                      {
+                                        "type": "filler"
+                                      },
+                                      {
+                                        "type": "box",
+                                        "layout": "baseline",
+                                        "contents": [
+                                          {
+                                            "type": "filler"
+                                          },
+                                          {
+                                            "type": "text",
+                                            "text": "ชำระค่าบริการ",
+                                            "color": "#ffffff",
+                                            "flex": 0,
+                                            "offsetTop": "-2px"
+                                          },
+                                          {
+                                            "type": "filler"
+                                          }
+                                        ],
+                                        "spacing": "sm"
+                                      },
+                                      {
+                                        "type": "filler"
+                                      }
+                                    ],
+                                    "borderWidth": "1px",
+                                    "cornerRadius": "20px",
+                                    "spacing": "sm",
+                                    "borderColor": "#00c900",
+                                    "margin": "xxl",
+                                    "height": "40px",
+                                    "backgroundColor": "#00c900"
+                                  }
+                                ]
+                              },
+                              "styles": {
+                                "footer": {
+                                  "separator": True
+                                }
+                              }
+                            })
+        
+        # Send both image and template messages
+        line_bot_api.reply_message(
+            event.reply_token,
+            flex_message
+        )
+
+        return
 
     else :
 
