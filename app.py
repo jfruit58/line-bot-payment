@@ -136,7 +136,7 @@ def regis():
             return  render_template("message.html",message=message  )
         
         # Check user is not already taken
-        cur.execute("UPDATE payment_users SET (user_id,name,surname,phone) VALUES (%s,%s,%s,%s) WHERE idnumber = %s", (user_id,name,surname,phone,idnumber,))
+        cur.execute("UPDATE payment_users SET user_id = %s, name = %s, surname = %s, phone = %s WHERE idnumber = %s", (user_id,name,surname,phone,idnumber,))
 
         conn.commit()
 
